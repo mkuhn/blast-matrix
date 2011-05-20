@@ -6,6 +6,7 @@
 REQUIRES = objects algo
 
 APP_PROJ = \
+matrixadj \
 blastp \
 blastn \
 blastx \
@@ -23,6 +24,8 @@ include @builddir@/Makefile.meta
 
 .PHONY: all $(APP_PROJ)
 
+matrixadj:
+	make -f Makefile.matrixadj_app
 blastn:
 	make -f Makefile.blastn_app
 blastp:
