@@ -1,0 +1,16 @@
+# $Id: Makefile.cleanup.lib 240006 2011-02-02 16:24:23Z rafanovi $
+
+# Build library "xcleanup"
+###############################
+
+WATCHERS = bollin kans
+
+ASN_DEP = general biblio seq pub seqset submit
+SRC = cleanup cleanupp cleanup_feat cleanup_general cleanup_pub \
+      cleanup_utils cleanup_biosource cleanup_gbqual cleanup_desc \
+      newcleanup
+
+DLL_LIB = xregexp $(PCRE_LIB)      
+LIB = xcleanup
+
+LIBS = $(PCRE_LIBS)

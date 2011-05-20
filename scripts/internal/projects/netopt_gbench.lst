@@ -1,0 +1,5 @@
+#include "../../projects/ncbi_gbench.lst"
+internal/txserver$
+internal/myncbi$
+internal/blast/DistribDbSupport
+internal/gpipe/align_db

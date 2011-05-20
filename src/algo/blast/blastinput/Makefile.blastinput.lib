@@ -1,0 +1,32 @@
+# $Id: Makefile.blastinput.lib 186303 2010-03-18 18:56:34Z ivanov $
+
+SRC_CXX = \
+blast_input \
+blast_fasta_input \
+blast_scope_src \
+blast_args \
+cmdline_flags \
+blast_input_aux \
+blastp_args \
+blastn_args \
+blastx_args \
+tblastn_args \
+tblastx_args \
+psiblast_args \
+rpsblast_args \
+rpstblastn_args
+
+SRC  = $(SRC_CXX)
+
+LIB = blastinput
+
+DLL_LIB = xblast $(OBJMGR_LIBS)
+
+# should be redundant, given the above :-/
+ASN_DEP = seqset xnetblast
+
+CFLAGS   = $(FAST_CFLAGS)
+CXXFLAGS = $(FAST_CXXFLAGS)
+LDFLAGS  = $(FAST_LDFLAGS)
+
+WATCHERS = blastsoft

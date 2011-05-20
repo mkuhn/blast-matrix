@@ -1,0 +1,12 @@
+# $Id: Makefile.in 256986 2011-03-09 17:23:41Z rafanovi $
+
+# Meta-makefile ("BLAST" project)
+#################################
+
+SUB_PROJ = composition_adjustment core dbindex dbindex_search api format blastinput \
+           gumbel_params unit_tests
+
+WATCHERS = blastsoft
+
+srcdir = @srcdir@
+include @builddir@/Makefile.meta

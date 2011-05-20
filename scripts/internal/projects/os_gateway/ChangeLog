@@ -1,0 +1,91 @@
+2010-12-22 11:57:11:
+    Finalize version 1.3.1, with the following major changes relative to 1.3.0:
+     * Allow cross-service sharing of DBAPI objects as appropriate.
+     * Ensure that connection-pool cleanup occurs regularly rather than
+       waiting indefinitely for idleness.
+     * Support (trial) backends not known to the load balancer.
+     * Log more information that may ease troubleshoooting.
+
+2010-08-17 15:46:05:
+    Finalize version 1.3.0, with the following major changes relative to 1.2.3:
+     * Advance to 6.x stable components (dbase 6.1, otherwise 6.0),
+       picking up various improvements in base libraries.
+     * Support hard and soft limits on the number of client connections.
+     * Generally improve timeout handling.
+     * Improve backend selection; in particular, correct server
+       preference logic and ensure pool diversity to limit the
+       potential impact of bad backends.
+     * Adapt to in-house CentOS systems, which lack the pidof utility
+       (but still at least have pgrep).
+     * Allow more threads (100, not just 10).
+
+2009-12-28 15:46:36:
+    Finalize version 1.2.3, with the following major changes relative to 1.2.2:
+     * Support checking that LBSMD hasn't wrongly given up on any ports.
+     * Keep track of empty "ping" requests, and log their counts periodically.
+     * Correct handling of requests containing long (>= 128-byte) strings.
+
+2009-06-03 10:50:46:
+    Slip a belated infrastructure change into version 1.2.2 (binaries
+    untouched):
+     * Adjust LBSMD penalty-calculation feedback script to avoid barrages
+       of notifications under some circumstances.
+
+2009-05-22 10:51:07:
+    Finalize version 1.2.2, with the following major changes relative to 1.2.1:
+     * Pick up latest fixes to 4.0.0 stable components.
+     * Fix a logic error that could lead to null pointer exceptions.
+     * Try resetting the DB connection factory when it yields no backends,
+       to compensate for overly persistent blacklisting.
+
+2009-05-06 14:52:59:
+    Slip belated infrastructure changes into version 1.2.1 (binaries untouched):
+     * Track probe results and report appropriate penalties to LBSMD.
+     * Have os_gateway.sh bomb out and send mail if /log/srv is unwritable.
+
+2009-04-06 13:17:21:
+    Finalize version 1.2.1, with the following major changes relative to 1.2.0:
+     * Pick up latest fixes to 4.0.0 stable components.
+     * Fix a logic error that could result in truncated responses when
+       using the FreeTDS driver.
+     * Ensure that exceptions that somehow slip through the cracks
+       receive proper backtraces to help debug their causes.
+
+2009-02-25 16:43:15:
+    Put the final touches on what is to be version 1.2.0, with the following
+    major changes relative to 1.1.1:
+     * Switch to newer base libraries (the 4.0.0 components).
+     * Support for the FreeTDS driver, now used by default.  (The commercial
+       ctlib driver remains available by explicit request.)
+     * Accommodation of transient backend errors.
+     * More logging improvements (mainly streamlining).
+
+2008-08-06 16:24:56:
+    Finalized version 1.1.1, with the following major changes (taken from the
+    trunk) relative to 1.1.0:
+     * Better integration with TaskManager.
+     * Further logging improvements.
+     * No longer crashes when receiving certain malformatted requests.
+
+2008-06-12 15:15:39.461659:
+    Cloned from release 1.1.0
+
+2008-05-06 14:55:19:
+    Finalized version 1.1.0, with the following major changes (taken from the
+    trunk) relative to 1.0.1:
+     * Logging brought more closely in line with other apps (particularly CGIs).
+     * Better recovery from backend errors.
+     * Somewhat favors local backends for efficiency.
+
+2008-05-06 11:49:27.103693:
+    Cloned from release 1.0.1
+
+2008-02-14 14:16:19:
+    Finalized version 1.0.1, with the following major changes relative to
+    1.0.0:
+     * Switch to slightly newer base libraries (still from the trunk).
+     * Support for, and use of, --without-dll to produce self-contained
+       executables.
+
+2008-02-04 14:17:13
+    Finalized (initial) 1.0.0 release, based on sources from 2008-01-30.

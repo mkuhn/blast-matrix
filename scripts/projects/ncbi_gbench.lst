@@ -1,0 +1,9 @@
+#include "ncbi_gui_base.lst"
+app/blast
+app/blastdb
+internal/gbench
+internal/gpipe/align_db/objects$
+misc/third_party
+-[^gi].*/app
+-[^g].*/unit_test
+-algo/ms

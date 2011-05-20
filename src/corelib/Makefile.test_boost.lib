@@ -1,0 +1,10 @@
+# $Id: Makefile.test_boost.lib 184376 2010-02-26 17:16:17Z ivanov $
+
+SRC = test_boost
+LIB = test_boost
+
+CPPFLAGS = $(ORIG_CPPFLAGS) $(BOOST_INCLUDE)
+
+REQUIRES = Boost.Test.Included
+
+WATCHERS = ivanovp

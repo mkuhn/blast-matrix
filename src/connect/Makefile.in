@@ -1,0 +1,18 @@
+#################################
+# $Id: Makefile.in 256987 2011-03-09 17:23:45Z rafanovi $
+# Author:  Denis Vakatov (vakatov@ncbi.nlm.nih.gov)
+#################################
+
+# Meta-makefile for project "Connect":
+#  - libraries:  "connect", "xconnect"
+#  - daemons:    "daemons/*.*"
+#  - tests:      "test/*.*"
+#################################
+
+LIB_PROJ = connect connssl xxconnect xconnect xthrserv 
+SUB_PROJ = services ext test daemons
+
+WATCHERS = lavr
+
+srcdir = @srcdir@
+include @builddir@/Makefile.meta

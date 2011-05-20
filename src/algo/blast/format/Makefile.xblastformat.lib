@@ -1,0 +1,12 @@
+# $Id: Makefile.xblastformat.lib 189834 2010-04-26 13:36:34Z madden $
+
+ASN_DEP = blastdb blastxml xnetblast
+
+LIB = xblastformat
+SRC = blastfmtutil blastxml_format blast_format data4xmlformat build_archive vecscreen_run
+
+CPPFLAGS = $(ORIG_CPPFLAGS)
+
+DLL_LIB = blastxml xhtml xcgi
+
+WATCHERS = blastsoft

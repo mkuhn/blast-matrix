@@ -1,0 +1,6 @@
+#include "../../projects/no_gbench.lst"
+internal/test/misc/xmlwrapp
+internal/demo/misc/xmlwrapp
+internal/a1/u2
+internal/a1/idfetch
+internal/util/testipub

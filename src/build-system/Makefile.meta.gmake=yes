@@ -1,0 +1,33 @@
+# $Id: Makefile.meta.gmake=yes 202328 2010-08-25 14:48:53Z ucko $
+
+# Work around GNU Make's tendency to double its automatic
+# --jobserver-fds=* flag's usage with each level of recursion, by
+# constructing an alternate MFLAGS_NR variable that limits its
+# occurrence to a single instance.  (Stripping it altogether backfires
+# with the patched make Mac OS X 10.5 ships.)
+
+MFLAGS_NR = $(filter-out -,$(filter-out --jobserver-fds=%,$(MFLAGS))) \
+            $(word 1,$(filter --jobserver-fds=%,$(MFLAGS)))
+
+# Interpret command-line specifications of APP_PROJ or LIB_PROJ as a
+# cue to clear out all other *_PROJ settings not also provided there.
+ORIG_APP_PROJ     := $(APP_PROJ)
+ORIG_LIB_PROJ     := $(LIB_PROJ)
+ORIG_ASN_PROJ     := $(ASN_PROJ)
+ORIG_DTD_PROJ     := $(DTD_PROJ)
+ORIG_XML_PROJ     := $(XML_PROJ)
+ORIG_EXP_APP_PROJ := $(EXPENDABLE_APP_PROJ)
+ORIG_EXP_LIB_PROJ := $(EXPENDABLE_LIB_PROJ)
+ORIG_EXPENDABLE_APP_PROJ := $(EXPENDABLE_APP_PROJ)
+ORIG_EXPENDABLE_LIB_PROJ := $(EXPENDABLE_LIB_PROJ)
+ifneq "$(filter command, $(origin APP_PROJ) $(origin LIB_PROJ))" ""
+  APP_PROJ=
+  LIB_PROJ=
+  EXPENDABLE_APP_PROJ=
+  EXPENDABLE_LIB_PROJ=
+  ifeq "$(origin APP_PROJ):$(LIB_PROJ)" "command line:"
+    ASN_PROJ=
+    DTD_PROJ=
+    XML_PROJ=
+  endif
+endif

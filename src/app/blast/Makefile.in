@@ -1,0 +1,43 @@
+# $Id: Makefile.in 143045 2008-10-14 19:56:23Z camacho $
+
+# Meta-makefile("APP" project)
+#################################
+
+REQUIRES = objects algo
+
+APP_PROJ = \
+blastp \
+blastn \
+blastx \
+tblastn \
+tblastx \
+psiblast \
+rpsblast \
+rpstblastn \
+blast_formatter
+
+USR_PROJ = legacy_blast update_blastdb
+
+srcdir = @srcdir@
+include @builddir@/Makefile.meta
+
+.PHONY: all $(APP_PROJ)
+
+blastn:
+	make -f Makefile.blastn_app
+blastp:
+	make -f Makefile.blastp_app
+blastx:
+	make -f Makefile.blastx_app
+tblastn:
+	make -f Makefile.tblastn_app
+tblastx:
+	make -f Makefile.tblastx_app
+psiblast:
+	make -f Makefile.psiblast_app
+rpsblast:
+	make -f Makefile.rpsblast_app
+rpstblastn:
+	make -f Makefile.rpstblastn_app
+blast_formatter:
+	make -f Makefile.blast_formatter_app

@@ -1,0 +1,9 @@
+# $Id: Makefile.xobjreadex.lib 208341 2010-10-15 18:36:58Z serovav $
+
+WATCHERS = dicuccio ludwigf
+
+ASN_DEP = seq seqset
+
+LIB = xobjreadex
+SRC = glimmer_reader idmapper idmapper_builtin idmapper_config \
+	  idmapper_database

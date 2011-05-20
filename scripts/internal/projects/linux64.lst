@@ -1,0 +1,47 @@
+#include "../../projects/no_gbench.lst"
+internal/third_party/affy
+internal/third_party/sybase/os
+internal/objects
+internal/misc/dbapi_driver_wrap_s
+internal/egene
+internal/ID/utils$
+internal/util/pstub
+internal/util/testipub
+internal/sss
+internal/ssssrv
+internal/stax
+internal/ncbi_ls
+internal/ncbils2
+internal/msgmail2
+internal/geo
+internal/skycgh
+internal/pubmedxml/Libs/PubmedServer
+internal/pubmedxml/xmldb
+internal/idx$
+internal/ilink$
+internal/idxext/.*/libs
+internal/txserver$
+internal/myncbi$
+internal/signon3$
+internal/history$
+internal/auxlib/tiol$
+internal/portal/backend/HTB$
+internal/portal/ncqueryhistory$
+internal/eutils/edirect
+internal/align_model$
+internal/mapview/objects
+internal/sra
+internal/blast
+internal/asn_cache/lib$
+internal/gpipe/align_db
+internal/gpipe/common$
+internal/gpipe/objects/genomecoll$
+internal/gpipe/objects/manifest$
+internal/gpipe/gencoll/src/gcaccess$
+internal/gpipe/gpinit/src/gpinit_compare$
+internal/gpipe/gpexec/queue/lib$
+internal/snp
+internal/test/misc/xmlwrapp
+internal/demo/misc/xmlwrapp
+internal/qall update-only
+internal/spell update-only

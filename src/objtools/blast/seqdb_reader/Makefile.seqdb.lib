@@ -1,0 +1,32 @@
+# $Id: Makefile.seqdb.lib 201229 2010-08-17 15:38:17Z camacho $
+
+ASN_DEP = seqsplit blastdb
+
+SRC = seqdb \
+seqdbbitset \
+seqdbfilter \
+seqdbatlas \
+seqdbalias \
+seqdbcommon \
+seqdbfile \
+seqdbimpl \
+seqdbvol \
+seqdbvolset \
+seqdboidlist \
+seqdbisam \
+seqdbtax \
+seqdbgilistset \
+seqdbexpert \
+seqdbblob \
+seqdbcol \
+seqdbgimask \
+seqdbobj \
+linkoutdb
+
+LIB = seqdb
+
+CFLAGS   = $(FAST_CFLAGS)
+CXXFLAGS = $(FAST_CXXFLAGS)
+LDFLAGS  = $(FAST_LDFLAGS)
+
+WATCHERS = maning camacho

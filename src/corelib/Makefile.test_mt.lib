@@ -1,0 +1,9 @@
+# $Id: Makefile.test_mt.lib 188742 2010-04-14 14:30:21Z gouriano $
+
+SRC = test_mt
+LIB    = test_mt
+
+# REQUIRES = MT
+
+USE_PCH = no
+WATCHERS = grichenk
