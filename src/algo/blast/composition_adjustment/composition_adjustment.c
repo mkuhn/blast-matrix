@@ -43,6 +43,8 @@ static char const rcsid[] =
 #include <algo/blast/composition_adjustment/optimize_target_freq.h>
 #include <algo/blast/composition_adjustment/unified_pvalues.h>
 
+#include <algo/blast/core/blast_encoding.h>
+
 
 /**positions of true characters in protein alphabet*/
 static int trueCharPositions[COMPO_NUM_TRUE_AA] =
@@ -1398,6 +1400,23 @@ Blast_CompositionMatrixAdj(int ** matrix,
                             matrixInfo->ungappedLambda);
 }
 
+void PrintMatrix(int **matrix)
+{
+    int i, j;
+    
+    for (i = 0; i < BLASTAA_SIZE; i++) printf("\t%c", NCBISTDAA_TO_AMINOACID[i]);
+    printf("\n");
+    
+    for (i = 0; i < BLASTAA_SIZE; i++)
+    {
+        printf("%c", NCBISTDAA_TO_AMINOACID[i]);
+        for (j = 0; j < BLASTAA_SIZE; j++)
+        {
+            printf("\t%d", matrix[i][j]);
+        }
+        printf("\n");
+    }
+}
 
 /* Documented in composition_adjustment.h. */
 int
@@ -1416,6 +1435,8 @@ Blast_AdjustScores(int ** matrix,
                    int compositionTestIndex,
                    double *ratioToPassBack)
 {
+    PrintMatrix(matrix);
+        
     const int alphsize = matrixInfo->cols;
 
     double lambdaForPair;     /*lambda for this pair of compositions*/
@@ -1505,6 +1526,9 @@ Blast_AdjustScores(int ** matrix,
                                        kFixedReBlosum62,
                                        NRrecord,
                                        matrixInfo);
+
+       PrintMatrix(matrix);
+
 
         *ratioToPassBack = 1.0;    /* meaningless for this mode */
         if (status <= 0)
