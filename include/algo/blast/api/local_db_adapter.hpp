@@ -98,6 +98,9 @@ public:
     /// @note ownership of the constructed object is handled by this class
     BlastSeqSrc* MakeSeqSrc();
 
+    /// Retrieve subject factory (added by Michael Kuhn)
+    CRef<IQueryFactory> GetSubjectFactory();
+
     /// Retrieves or constructs the IBlastSeqInfoSrc
     /// @note ownership of the constructed object is handled by this class
     IBlastSeqInfoSrc* MakeSeqInfoSrc();

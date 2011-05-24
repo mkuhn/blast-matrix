@@ -148,6 +148,14 @@ CLocalDbAdapter::MakeSeqSrc()
     return m_SeqSrc;
 }
 
+CRef<IQueryFactory> 
+CLocalDbAdapter::GetSubjectFactory()
+{
+    return m_SubjectFactory;
+}
+
+
+
 IBlastSeqInfoSrc*
 CLocalDbAdapter::MakeSeqInfoSrc()
 {
