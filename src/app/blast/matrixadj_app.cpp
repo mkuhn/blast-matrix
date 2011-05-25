@@ -228,7 +228,7 @@ int CBlastpApp::Run(void)
                      
                      Blast_MatrixInfo *scaledMatrixInfo = Blast_MatrixInfoNew(BLASTAA_SIZE, BLASTAA_SIZE, 0);
                      scaledMatrixInfo->matrixName = strdup(opt.GetMatrixName());
-                     scaledMatrixInfo->ungappedLambda = 0.31; // FIXME
+                     scaledMatrixInfo->ungappedLambda = 0.3176; // Standard ungapped lambda for BLOSUM62
                     
                      /* Frequency ratios for the matrix */
                      SFreqRatios * stdFreqRatios = NULL;
