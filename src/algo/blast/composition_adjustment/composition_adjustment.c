@@ -1436,6 +1436,7 @@ Blast_AdjustScores(int ** matrix,
                    double *ratioToPassBack)
 {
     PrintMatrix(matrix);
+    printf("ungapped lambda: %g\n", matrixInfo->ungappedLambda);
         
     const int alphsize = matrixInfo->cols;
 

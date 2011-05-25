@@ -59,6 +59,9 @@ NCBI_BLASTINPUT_EXPORT extern const string kArgDbSize;
 /// Subject input file to search
 NCBI_BLASTINPUT_EXPORT extern const string kArgSubject;
 
+/// Lambda of query in searches against a database, needed for matrix adjustment without search
+NCBI_BLASTINPUT_EXPORT extern const string kArgQueryLambda;
+
 /// BLAST database molecule type
 NCBI_BLASTINPUT_EXPORT extern const string kArgDbType;
 

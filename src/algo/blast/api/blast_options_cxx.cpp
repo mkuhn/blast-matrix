@@ -1745,6 +1745,23 @@ CBlastOptions::SetCutoffScore(int s)
 }
 
 double 
+CBlastOptions::GetQueryLambda() const
+{
+    if (! m_Local) {
+        x_Throwx("Error: GetQueryLambda() not available.");
+    }
+    return m_Local->GetQueryLambda();
+}
+void 
+CBlastOptions::SetQueryLambda(double lambda)
+{
+    if (! m_Local) {
+        x_Throwx("Error: SetQueryLambda() not available.");
+    }
+    m_Local->SetQueryLambda(lambda);
+}
+
+double 
 CBlastOptions::GetPercentIdentity() const
 {
     if (! m_Local) {

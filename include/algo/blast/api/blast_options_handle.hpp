@@ -245,6 +245,12 @@ public:
     /// @param s CutoffScore [in]
     void SetCutoffScore(int s) { m_Opts->SetCutoffScore(s); }
 
+    /// Returns QueryLambda
+    double GetQueryLambda() const { return m_Opts->GetQueryLambda(); }
+    /// Sets QueryLambda
+    /// @param lambda QueryLambda [in]
+    void SetQueryLambda(double lambda) { m_Opts->SetQueryLambda(lambda); }
+
     /// Returns PercentIdentity
     double GetPercentIdentity() const { return m_Opts->GetPercentIdentity(); }
     /// Sets PercentIdentity

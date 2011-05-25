@@ -55,6 +55,8 @@ const string kArgOutput("out");
 const string kArgDb("db");
 const string kArgSubject("subject");
 
+const string kArgQueryLambda("lambda");
+
 const string kArgDbSize("dbsize");
 
 const string kArgDbType("dbtype");

@@ -237,6 +237,9 @@ public:
     objects::ENa_strand GetStrandOption() const;
     void SetStrandOption(objects::ENa_strand s);
 
+    double GetQueryLambda() const;
+    void SetQueryLambda(double lambda);
+
     int GetQueryGeneticCode() const;
     void SetQueryGeneticCode(int gc);
 

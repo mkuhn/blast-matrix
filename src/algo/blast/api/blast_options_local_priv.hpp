@@ -202,6 +202,9 @@ public:
     double GetPercentIdentity() const;
     void SetPercentIdentity(double p);
 
+    double GetQueryLambda() const;
+    void SetQueryLambda(double lambda);
+
     int GetMinDiagSeparation() const;
     void SetMinDiagSeparation(int d);
 
@@ -1197,6 +1200,18 @@ inline void
 CBlastOptionsLocal::SetPercentIdentity(double p)
 {
     m_HitSaveOpts->percent_identity = p;
+}
+
+inline double
+CBlastOptionsLocal::GetQueryLambda() const
+{
+    return m_QueryOpts->query_lambda;
+}
+
+inline void
+CBlastOptionsLocal::SetQueryLambda(double lambda)
+{
+    m_QueryOpts->query_lambda = lambda;
 }
 
 inline int

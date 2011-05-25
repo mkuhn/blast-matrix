@@ -148,6 +148,10 @@ CGenericSearchArgs::SetArgumentDescriptions(CArgDescriptions& arg_desc)
                                CArgDescriptions::eInteger);
     }
 
+    arg_desc.AddOptionalKey(kArgQueryLambda, "lambda",
+                           "Lambda of query in searches against a database, needed for matrix adjustment without search", 
+                           CArgDescriptions::eDouble);
+
 
     if (m_ShowPercentIdentity) {
         arg_desc.SetCurrentGroup("Restrict search or results");
@@ -254,6 +258,10 @@ CGenericSearchArgs::ExtractAlgorithmOptions(const CArgs& args,
 
     if (args.Exist(kArgPercentIdentity) && args[kArgPercentIdentity]) {
         opt.SetPercentIdentity(args[kArgPercentIdentity].AsDouble());
+    }
+
+    if (args.Exist(kArgQueryLambda) && args[kArgQueryLambda]) {
+        opt.SetQueryLambda(args[kArgQueryLambda].AsDouble());
     }
 
 #if 0

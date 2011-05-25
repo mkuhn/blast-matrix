@@ -228,7 +228,7 @@ int CBlastpApp::Run(void)
                      
                      Blast_MatrixInfo *scaledMatrixInfo = Blast_MatrixInfoNew(BLASTAA_SIZE, BLASTAA_SIZE, 0);
                      scaledMatrixInfo->matrixName = strdup(opt.GetMatrixName());
-                     scaledMatrixInfo->ungappedLambda = 0.31; // FIXME
+                     scaledMatrixInfo->ungappedLambda = opt.GetQueryLambda();
                     
                      /* Frequency ratios for the matrix */
                      SFreqRatios * stdFreqRatios = NULL;

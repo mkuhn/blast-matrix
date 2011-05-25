@@ -248,6 +248,8 @@ typedef struct QuerySetUpOptions {
                            2 = reverse; 3 = both */
    Int4 genetic_code;     /**< Genetic code to use for translation, 
                              [t]blastx only */
+
+   double query_lambda; /** Lambda of the query, used for matrix adjument without running alignments */
 } QuerySetUpOptions;
 
 /** Options needed for initial word finding and processing */
