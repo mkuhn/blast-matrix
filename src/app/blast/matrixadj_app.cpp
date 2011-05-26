@@ -157,6 +157,14 @@ void PrettyPrintMatrix(Int4 **matrix, ostream& out)
 }
 
 
+int getCCType(const string t)
+{
+    const string prefix = t.substr(0, 3);
+    if (prefix == "no-") return -1;
+    if (prefix == "cc-") return 1;
+    return 0;
+}
+
 int CBlastpApp::Run(void)
 {
     int status = BLAST_EXIT_SUCCESS;
@@ -230,7 +238,8 @@ int CBlastpApp::Run(void)
             {
                 CConstRef<CSeq_loc> qseqloc = local_query_data->GetSeq_loc(query_index);
                 
-                string query_title = sequence::GetTitle( scope->GetBioseqHandle(*qseqloc) );
+                const string query_title = sequence::GetTitle( scope->GetBioseqHandle(*qseqloc) );
+                const int query_type = getCCType(query_title);
                 
                 // keep track of position within the subject BLAST_SequenceBlk
                 size_t current_start = 0;
@@ -246,6 +255,13 @@ int CBlastpApp::Run(void)
                      int subject_length = sseqloc->GetStop(eExtreme_Positional);
                      
                      string subject_title = sequence::GetTitle( scope->GetBioseqHandle(*sseqloc) );
+
+                     // if a query/subject type is set (i.e. prefix "cc-" / "no-"), only calculate matrices for same type
+                     if (query_type)
+                     {
+                         const int subject_type = getCCType(subject_title);
+                         if (subject_type && subject_type != query_type) continue;
+                     }
                      
                      current_start = current_end;
                      current_end = current_start + subject_length;
@@ -295,12 +311,13 @@ int CBlastpApp::Run(void)
 
                     // PrettyPrintMatrix(sbp->matrix->data, cout);
 
-                    cout << query_title << "\t" << subject_title << "\t" << scaling_factor;
-                    PrintMatrix(sbp->matrix->data, cout);
+                    // if the adjustment failed, we get back an unscaled BLOSUM matrix
+                    const int actual_scaling_factor = adjust_search_failed ? 1 : scaling_factor;
 
-                    _ASSERT(adjust_search_failed == 0);
+                    cout << query_title << "\t" << subject_title << "\t" << actual_scaling_factor;
+                    PrintMatrix(sbp->matrix->data, cout);
                     
-                     current_end++;
+                    current_end++;
                 }
             }
             
