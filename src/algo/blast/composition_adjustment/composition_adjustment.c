@@ -1435,7 +1435,7 @@ Blast_AdjustScores(int ** matrix,
                    int compositionTestIndex,
                    double *ratioToPassBack)
 {
-    PrintMatrix(matrix);
+    // PrintMatrix(matrix);
         
     const int alphsize = matrixInfo->cols;
 
@@ -1527,8 +1527,7 @@ Blast_AdjustScores(int ** matrix,
                                        NRrecord,
                                        matrixInfo);
 
-       PrintMatrix(matrix);
-
+       // PrintMatrix(matrix);
 
         *ratioToPassBack = 1.0;    /* meaningless for this mode */
         if (status <= 0)

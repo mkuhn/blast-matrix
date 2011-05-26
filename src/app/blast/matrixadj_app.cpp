@@ -51,6 +51,8 @@ static char const rcsid[] =
 #include "../../algo/blast/core/matrix_freq_ratios.h"
 #include "../../algo/blast/api/blast_setup.hpp"
 
+#include <objmgr/util/sequence.hpp>
+
 #ifndef SKIP_DOXYGEN_PROCESSING
 USING_NCBI_SCOPE;
 USING_SCOPE(blast);
@@ -121,6 +123,25 @@ s_CalcLambda(double probs[], int min_score, int max_score, double lambda0)
 
 void PrintMatrix(Int4 **matrix, ostream& out)
 {
+    for (int i = 0; i < BLASTAA_SIZE; i++)
+    {
+        for (int j = 0; j < BLASTAA_SIZE; j++)
+        {
+            if (matrix)
+            {
+                out  << "\t" << matrix[i][j];
+            }
+            else
+            {
+                out  << "\t" << NCBISTDAA_TO_AMINOACID[i] << NCBISTDAA_TO_AMINOACID[j];
+            }
+        }
+    }
+    out << "\n";
+}
+
+void PrettyPrintMatrix(Int4 **matrix, ostream& out)
+{
     for (int i = 0; i < BLASTAA_SIZE; i++) out << "\t" << NCBISTDAA_TO_AMINOACID[i];
     out << "\n";
 
@@ -187,6 +208,12 @@ int CBlastpApp::Run(void)
         static const int kReMatrixAdjustmentPseudocounts = 20;
         static const int compositionTestIndex = 0;
         
+        static const int scaling_factor = 32;
+        
+        // print header
+        cout << "# query\tsubject\tscaling_factor";
+        PrintMatrix(0, cout);
+        
         /*** Process the input ***/
         for (; !input.End(); ) {
 
@@ -203,6 +230,8 @@ int CBlastpApp::Run(void)
             {
                 CConstRef<CSeq_loc> qseqloc = local_query_data->GetSeq_loc(query_index);
                 
+                string query_title = sequence::GetTitle( scope->GetBioseqHandle(*qseqloc) );
+                
                 // keep track of position within the subject BLAST_SequenceBlk
                 size_t current_start = 0;
                 size_t current_end = 0;
@@ -216,19 +245,18 @@ int CBlastpApp::Run(void)
                      CConstRef<CSeq_loc> sseqloc = local_subject_data->GetSeq_loc(subject_index);
                      int subject_length = sseqloc->GetStop(eExtreme_Positional);
                      
+                     string subject_title = sequence::GetTitle( scope->GetBioseqHandle(*sseqloc) );
+                     
                      current_start = current_end;
                      current_end = current_start + subject_length;
                      
-                     printf("Start: %zu\n", current_start);
-                     printf("End: %zu\n", current_end);
-
                      // Determine subject composition
                      Blast_AminoAcidComposition subject_composition;
                      Blast_ReadAaComposition(&subject_composition, BLASTAA_SIZE, &subject->sequence[current_start], subject_length);
                      
                      Blast_MatrixInfo *scaledMatrixInfo = Blast_MatrixInfoNew(BLASTAA_SIZE, BLASTAA_SIZE, 0);
                      scaledMatrixInfo->matrixName = strdup(opt.GetMatrixName());
-                     scaledMatrixInfo->ungappedLambda = 0.3176; // Standard ungapped lambda for BLOSUM62
+                     scaledMatrixInfo->ungappedLambda = 0.3176 / scaling_factor; // Standard ungapped lambda for BLOSUM62
                     
                      /* Frequency ratios for the matrix */
                      SFreqRatios * stdFreqRatios = NULL;
@@ -254,8 +282,6 @@ int CBlastpApp::Run(void)
                      sbp->name = strdup(opt.GetMatrixName());
                      Blast_ScoreBlkMatrixFill(sbp, &BlastFindMatrixPath);
                      
-                     PrintMatrix(sbp->matrix->data, cerr);
-                     
                      int adjust_search_failed =
                          Blast_AdjustScores(sbp->matrix->data,
                                             &query_composition, query->length,
@@ -267,7 +293,10 @@ int CBlastpApp::Run(void)
                                             compositionTestIndex,
                                             &LambdaRatio);
 
-                    PrintMatrix(sbp->matrix->data, cerr);
+                    // PrettyPrintMatrix(sbp->matrix->data, cout);
+
+                    cout << query_title << "\t" << subject_title << "\t" << scaling_factor;
+                    PrintMatrix(sbp->matrix->data, cout);
 
                     _ASSERT(adjust_search_failed == 0);
                     
