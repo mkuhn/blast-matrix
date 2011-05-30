@@ -233,6 +233,10 @@ int CBlastpApp::Run(void)
             
             BLAST_SequenceBlk* query = local_query_data->GetSequenceBlk();
 
+            // keep track of position within the query BLAST_SequenceBlk
+            size_t query_start = 0;
+            size_t query_end = 0;
+
             // Loop through all combinations of subjects and queries
             for (size_t query_index=0; query_index < local_query_data->GetNumQueries(); query_index++)
             {
@@ -241,18 +245,21 @@ int CBlastpApp::Run(void)
                 const string query_title = sequence::GetTitle( scope->GetBioseqHandle(*qseqloc) );
                 const int query_type = getCCType(query_title);
                 
-                // keep track of position within the subject BLAST_SequenceBlk
-                size_t current_start = 0;
-                size_t current_end = 0;
+                const int query_length = qseqloc->GetStop(eExtreme_Positional);
+                query_start = query_end;
+                query_end = query_start + query_length;
                 
                 // Determine query composition
                 Blast_AminoAcidComposition query_composition;
-                Blast_ReadAaComposition(&query_composition, BLASTAA_SIZE, query->sequence, query->length);
+                Blast_ReadAaComposition(&query_composition, BLASTAA_SIZE, &query->sequence[query_start], query_length);
+                
+                // keep track of position within the subject BLAST_SequenceBlk
+                size_t subject_start = 0;
+                size_t subject_end = 0;
                 
                 for (size_t subject_index=0; subject_index < local_subject_data->GetNumQueries(); subject_index++)
                 {
                      CConstRef<CSeq_loc> sseqloc = local_subject_data->GetSeq_loc(subject_index);
-                     int subject_length = sseqloc->GetStop(eExtreme_Positional);
                      
                      string subject_title = sequence::GetTitle( scope->GetBioseqHandle(*sseqloc) );
 
@@ -263,12 +270,13 @@ int CBlastpApp::Run(void)
                          if (subject_type && subject_type != query_type) continue;
                      }
                      
-                     current_start = current_end;
-                     current_end = current_start + subject_length;
+                     const int subject_length = sseqloc->GetStop(eExtreme_Positional);
+                     subject_start = subject_end;
+                     subject_end = subject_start + subject_length;
                      
                      // Determine subject composition
                      Blast_AminoAcidComposition subject_composition;
-                     Blast_ReadAaComposition(&subject_composition, BLASTAA_SIZE, &subject->sequence[current_start], subject_length);
+                     Blast_ReadAaComposition(&subject_composition, BLASTAA_SIZE, &subject->sequence[subject_start], subject_length);
                      
                      Blast_MatrixInfo *scaledMatrixInfo = Blast_MatrixInfoNew(BLASTAA_SIZE, BLASTAA_SIZE, 0);
                      scaledMatrixInfo->matrixName = strdup(opt.GetMatrixName());
@@ -317,8 +325,9 @@ int CBlastpApp::Run(void)
                     cout << query_title << "\t" << subject_title << "\t" << actual_scaling_factor;
                     PrintMatrix(sbp->matrix->data, cout);
                     
-                    current_end++;
+                    subject_end++;
                 }
+                query_end++;
             }
             
 
