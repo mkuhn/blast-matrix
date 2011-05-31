@@ -120,7 +120,9 @@ s_CalcLambda(double probs[], int min_score, int max_score, double lambda0)
     return Blast_KarlinLambdaNR(&freq, lambda0);
 }
 
-
+/**
+ * Print a matrix on one line, replacing -32768 with X. If matrix is null, print header line
+ */
 void PrintMatrix(Int4 **matrix, ostream& out)
 {
     for (int i = 0; i < BLASTAA_SIZE; i++)
@@ -129,7 +131,12 @@ void PrintMatrix(Int4 **matrix, ostream& out)
         {
             if (matrix)
             {
-                out  << "\t" << matrix[i][j];
+                int m = matrix[i][j];
+                if (m == -32768) {
+                    out  << "\tX";
+                } else {
+                    out  << "\t" << m;
+                }
             }
             else
             {
