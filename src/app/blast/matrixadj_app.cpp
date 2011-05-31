@@ -264,11 +264,8 @@ int CBlastpApp::Run(void)
                      string subject_title = sequence::GetTitle( scope->GetBioseqHandle(*sseqloc) );
 
                      // if a query/subject type is set (i.e. prefix "cc-" / "no-"), only calculate matrices for same type
-                     if (query_type)
-                     {
-                         const int subject_type = getCCType(subject_title);
-                         if (subject_type && subject_type != query_type) continue;
-                     }
+                     const int subject_type = getCCType(subject_title);
+                     if (subject_type != query_type) continue;
                      
                      const int subject_length = sseqloc->GetStop(eExtreme_Positional);
                      subject_start = subject_end;
