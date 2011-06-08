@@ -164,6 +164,16 @@ void PrettyPrintMatrix(Int4 **matrix, ostream& out)
 }
 
 
+void PrintSeq(Uint1* sequence, int sequence_length, ostream& out)
+{
+    for (int i = 0; i < sequence_length; i++) 
+    {
+        out << NCBISTDAA_TO_AMINOACID[ sequence[i] ];
+        if (i % 80 == 79) out << "\n";
+    }
+    out << "\n";
+}
+
 int getCCType(const string t)
 {
     const string prefix = t.substr(0, 3);
@@ -171,6 +181,44 @@ int getCCType(const string t)
     if (prefix == "cc-") return 1;
     return 0;
 }
+
+
+/** Default instructions and mask residue for SEG filtering, copied from blast_kappa.c */
+#define BLASTP_MASK_INSTRUCTIONS "S 10 1.8 2.1"
+
+/**
+ * Filter low complexity regions from the sequence data; uses the SEG
+ * algorithm. Based on s_DoSegSequenceData in blast_kappa.c
+ *
+ * @param seqData            data to be filtered
+ * @return   0 for success; -1 for out-of-memory
+ */
+static int
+MaskSequence(Uint1* sequence, int sequence_length)
+{
+    int status = 0;
+    BlastSeqLoc* mask_seqloc = NULL;
+    SBlastFilterOptions* filter_options = NULL;
+
+    status = BlastFilteringOptionsFromString(eBlastTypeBlastp,
+                                             BLASTP_MASK_INSTRUCTIONS,
+                                             &filter_options, NULL);
+    if (status == 0) {
+        status = BlastSetUp_Filter(eBlastTypeBlastp, sequence,
+                                   sequence_length, 0, filter_options,
+                                   &mask_seqloc, NULL);
+        filter_options = SBlastFilterOptionsFree(filter_options);
+    }
+    if (status == 0) {
+        Blast_MaskTheResidues(sequence, sequence_length,
+                              FALSE, mask_seqloc, FALSE, 0);
+    }
+    if (mask_seqloc != NULL) {
+        mask_seqloc = BlastSeqLocFree(mask_seqloc);
+    }
+    return status;
+}
+
 
 int CBlastpApp::Run(void)
 {
@@ -226,8 +274,10 @@ int CBlastpApp::Run(void)
         static const int scaling_factor = 32;
         
         // print header
+        fflush(stdout);
         cout << "# query\tsubject\tscaling_factor";
         PrintMatrix(0, cout);
+        cout.flush();
         
         /*** Process the input ***/
         for (; !input.End(); ) {
@@ -252,13 +302,19 @@ int CBlastpApp::Run(void)
                 const string query_title = sequence::GetTitle( scope->GetBioseqHandle(*qseqloc) );
                 const int query_type = getCCType(query_title);
                 
-                const int query_length = qseqloc->GetStop(eExtreme_Positional);
+                const int query_length = 1 + qseqloc->GetStop(eExtreme_Positional);
                 query_start = query_end;
                 query_end = query_start + query_length;
                 
                 // Determine query composition
                 Blast_AminoAcidComposition query_composition;
                 Blast_ReadAaComposition(&query_composition, BLASTAA_SIZE, &query->sequence[query_start], query_length);
+                
+                // fflush(stdout);
+                // cout << "query:\n";
+                // PrintSeq(&query->sequence[query_start], query_length, cout);
+                // cout << "query_start: " << query_start << " query_length " << query_length << "\n";
+                // cout.flush();
                 
                 // keep track of position within the subject BLAST_SequenceBlk
                 size_t subject_start = 0;
@@ -270,66 +326,79 @@ int CBlastpApp::Run(void)
                      
                      string subject_title = sequence::GetTitle( scope->GetBioseqHandle(*sseqloc) );
 
-                     // if a query/subject type is set (i.e. prefix "cc-" / "no-"), only calculate matrices for same type
-                     const int subject_type = getCCType(subject_title);
-                     if (subject_type != query_type) continue;
-                     
-                     const int subject_length = sseqloc->GetStop(eExtreme_Positional);
+                     const int subject_length = 1 + sseqloc->GetStop(eExtreme_Positional);
                      subject_start = subject_end;
                      subject_end = subject_start + subject_length;
                      
-                     // Determine subject composition
-                     Blast_AminoAcidComposition subject_composition;
-                     Blast_ReadAaComposition(&subject_composition, BLASTAA_SIZE, &subject->sequence[subject_start], subject_length);
-                     
-                     Blast_MatrixInfo *scaledMatrixInfo = Blast_MatrixInfoNew(BLASTAA_SIZE, BLASTAA_SIZE, 0);
-                     scaledMatrixInfo->matrixName = strdup(opt.GetMatrixName());
-                     scaledMatrixInfo->ungappedLambda = 0.3176 / scaling_factor; // Standard ungapped lambda for BLOSUM62
-                    
-                     /* Frequency ratios for the matrix */
-                     SFreqRatios * stdFreqRatios = NULL;
+                     // if a query/subject type is set (i.e. prefix "cc-" / "no-"), only calculate matrices for same type
+                     const int subject_type = getCCType(subject_title);
+                     if (subject_type == query_type) 
+                     {
+                          MaskSequence(&subject->sequence[subject_start], subject_length);
 
-                     stdFreqRatios = _PSIMatrixFrequencyRatiosNew(scaledMatrixInfo->matrixName);
-                     for (int i = 0;  i < BLASTAA_SIZE;  i++) {
-                         for (int j = 0;  j < BLASTAA_SIZE;  j++) {
-                             scaledMatrixInfo->startFreqRatios[i][j] = stdFreqRatios->data[i][j];
+                          BlastScoreBlk *sbp = BlastScoreBlkNew(BLASTAA_SEQ_CODE, 1);
+                          sbp->name = strdup(opt.GetMatrixName());
+                          Blast_ScoreBlkMatrixFill(sbp, &BlastFindMatrixPath);
+                          Blast_ScoreBlkKbpIdealCalc(sbp);
+
+                          // Determine subject composition
+                          Blast_AminoAcidComposition subject_composition;
+                          Blast_ReadAaComposition(&subject_composition, BLASTAA_SIZE, &subject->sequence[subject_start], subject_length);
+
+                          // fflush(stdout);
+                          // cout << "subject:\n";
+                          // PrintSeq(&subject->sequence[subject_start], subject_length, cout);
+                          // cout << "subject_start: " << subject_start << " subject_length " << subject_length << "\n";
+                          // cout.flush();
+
+                          Blast_MatrixInfo *scaledMatrixInfo = Blast_MatrixInfoNew(BLASTAA_SIZE, BLASTAA_SIZE, 0);
+                          scaledMatrixInfo->matrixName = strdup(opt.GetMatrixName());
+                          scaledMatrixInfo->ungappedLambda = sbp->kbp_ideal->Lambda / scaling_factor;
+
+                          /* Frequency ratios for the matrix */
+                          SFreqRatios * stdFreqRatios = NULL;
+
+                          stdFreqRatios = _PSIMatrixFrequencyRatiosNew(scaledMatrixInfo->matrixName);
+                          for (int i = 0;  i < BLASTAA_SIZE;  i++) {
+                              for (int j = 0;  j < BLASTAA_SIZE;  j++) {
+                                  scaledMatrixInfo->startFreqRatios[i][j] = stdFreqRatios->data[i][j];
+                              }
+                          }
+                          stdFreqRatios = _PSIMatrixFrequencyRatiosFree(stdFreqRatios);
+
+                          Blast_Int4MatrixFromFreq(scaledMatrixInfo->startMatrix, scaledMatrixInfo->cols,
+                                                   scaledMatrixInfo->startFreqRatios, scaledMatrixInfo->ungappedLambda);
+
+
+                          /* which mode of composition adjustment is actually used? */
+                          EMatrixAdjustRule matrix_adjust_rule = eDontAdjustMatrix;
+                          double pvalueForThisPair = (-1); /* p-value for this match for composition; -1 == no adjustment*/
+                          double LambdaRatio; /*lambda ratio*/
+
+                          int adjust_search_failed =
+                              Blast_AdjustScores(sbp->matrix->data,
+                                                 &query_composition, query_length,
+                                                 &subject_composition, subject_length,
+                                                 scaledMatrixInfo, eCompositionMatrixAdjust,
+                                                 kReMatrixAdjustmentPseudocounts, NRrecord,
+                                                 &matrix_adjust_rule, &s_CalcLambda,
+                                                 &pvalueForThisPair,
+                                                 compositionTestIndex,
+                                                 &LambdaRatio);
+
+                         // PrettyPrintMatrix(sbp->matrix->data, cout);
+
+                         // if the adjustment failed, don't print anything: we'll fall back to other matrices in CCAlign
+                         if (!adjust_search_failed)
+                         {
+                             fflush(stdout);
+                             cout << query_title << "\t" << subject_title << "\t" << scaling_factor;
+                             PrintMatrix(sbp->matrix->data, cout);
+                             cout.flush();                         
                          }
                      }
-                     stdFreqRatios = _PSIMatrixFrequencyRatiosFree(stdFreqRatios);
-
-                     Blast_Int4MatrixFromFreq(scaledMatrixInfo->startMatrix, scaledMatrixInfo->cols,
-                                              scaledMatrixInfo->startFreqRatios, scaledMatrixInfo->ungappedLambda);
-                    
-
-                     /* which mode of composition adjustment is actually used? */
-                     EMatrixAdjustRule matrix_adjust_rule = eDontAdjustMatrix;
-                     double pvalueForThisPair = (-1); /* p-value for this match for composition; -1 == no adjustment*/
-                     double LambdaRatio; /*lambda ratio*/
-
-                     BlastScoreBlk *sbp = BlastScoreBlkNew(BLASTAA_SEQ_CODE, 1);
-                     sbp->name = strdup(opt.GetMatrixName());
-                     Blast_ScoreBlkMatrixFill(sbp, &BlastFindMatrixPath);
                      
-                     int adjust_search_failed =
-                         Blast_AdjustScores(sbp->matrix->data,
-                                            &query_composition, query->length,
-                                            &subject_composition, subject_length,
-                                            scaledMatrixInfo, eCompositionBasedStats,
-                                            kReMatrixAdjustmentPseudocounts, NRrecord,
-                                            &matrix_adjust_rule, &s_CalcLambda,
-                                            &pvalueForThisPair,
-                                            compositionTestIndex,
-                                            &LambdaRatio);
-
-                    // PrettyPrintMatrix(sbp->matrix->data, cout);
-
-                    // if the adjustment failed, we get back an unscaled BLOSUM matrix
-                    const int actual_scaling_factor = adjust_search_failed ? 1 : scaling_factor;
-
-                    cout << query_title << "\t" << subject_title << "\t" << actual_scaling_factor;
-                    PrintMatrix(sbp->matrix->data, cout);
-                    
-                    subject_end++;
+                     subject_end++;
                 }
                 query_end++;
             }

@@ -1177,11 +1177,13 @@ Blast_ReadAaComposition(Blast_AminoAcidComposition * composition,
         prob[i] = 0.0;
     }
     for (i = 0;  i < length;  i++) {
+        // printf("%c", NCBISTDAA_TO_AMINOACID[sequence[i]]); // MKDEBUG
         if (alphaConvert[sequence[i]] >= 0) {
             prob[sequence[i]]++;
             numTrueAminoAcids++;
         }
     }
+    // printf("\n");  // MKDEBUG
     composition->numTrueAminoAcids = numTrueAminoAcids;
     if (numTrueAminoAcids > 0) {
         for (i = 0;  i < alphsize;  i++) {
@@ -1435,7 +1437,10 @@ Blast_AdjustScores(int ** matrix,
                    int compositionTestIndex,
                    double *ratioToPassBack)
 {
-    // PrintMatrix(matrix);
+    // printf("matrix\n");
+    // PrintMatrix(matrix); //MKDEBUG
+    // printf("start matrix\n");
+    // PrintMatrix(matrixInfo->startMatrix); //MKDEBUG
         
     const int alphsize = matrixInfo->cols;
 
@@ -1527,7 +1532,9 @@ Blast_AdjustScores(int ** matrix,
                                        NRrecord,
                                        matrixInfo);
 
-       // PrintMatrix(matrix);
+
+       // printf("adj matrix\n");
+       // PrintMatrix(matrix); // MKDEBUG
 
         *ratioToPassBack = 1.0;    /* meaningless for this mode */
         if (status <= 0)

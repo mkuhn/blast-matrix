@@ -1290,6 +1290,9 @@ Blast_RedoOneMatchSmithWaterman(BlastCompo_Alignment ** alignments,
                                                      aSwScore,
                                                      positionBased,
                                                      forbidden);
+                                                     
+                    // printf("aSwScore: %d, updatedScore: %d matchStart: %d matchEnd: %d queryStart: %d queryEnd: %d\n", aSwScore, updatedScore, matchStart, matchEnd, queryStart, queryEnd); // MKDEBUG
+                    
                     if (status != 0) {
                         goto window_index_loop_cleanup;
                     }
