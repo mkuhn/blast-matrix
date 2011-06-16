@@ -364,7 +364,7 @@ int CBlastpApp::Run(void)
                                   scaledMatrixInfo->startFreqRatios[i][j] = stdFreqRatios->data[i][j];
                               }
                           }
-                          stdFreqRatios = _PSIMatrixFrequencyRatiosFree(stdFreqRatios);
+                          _PSIMatrixFrequencyRatiosFree(stdFreqRatios);
 
                           Blast_Int4MatrixFromFreq(scaledMatrixInfo->startMatrix, scaledMatrixInfo->cols,
                                                    scaledMatrixInfo->startFreqRatios, scaledMatrixInfo->ungappedLambda);
@@ -396,18 +396,18 @@ int CBlastpApp::Run(void)
                              PrintMatrix(sbp->matrix->data, cout);
                              cout.flush();                         
                          }
+                         
+                         Blast_MatrixInfoFree(&scaledMatrixInfo);
+                         BlastScoreBlkFree(sbp);
                      }
                      
                      subject_end++;
                 }
                 query_end++;
             }
-            
-
-            Blast_CompositionWorkspaceFree(&NRrecord);
-
-
         }
+
+        Blast_CompositionWorkspaceFree(&NRrecord);
 
         if (m_CmdLineArgs->ProduceDebugOutput()) {
             opts_hndl->GetOptions().DebugDumpText(NcbiCerr, "BLAST options", 1);
