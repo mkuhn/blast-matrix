@@ -176,9 +176,18 @@ void PrintSeq(Uint1* sequence, int sequence_length, ostream& out)
 
 int getCCType(const string t)
 {
-    const string prefix = t.substr(0, 3);
-    if (prefix == "no-") return -1;
-    if (prefix == "cc-") return 1;
+    const size_t sep = t.find("-", 0);
+
+    if (sep < 0) return 0;
+
+    const string prefix = t.substr(0, sep);
+    if (prefix == "no") return 1;
+    if (prefix == "cc") return 2;
+    if (prefix == "all") return 3;
+    if (prefix == "ad") return 4;
+    if (prefix == "bcf") return 5;
+    if (prefix == "eg") return 6;
+    
     return 0;
 }
 
